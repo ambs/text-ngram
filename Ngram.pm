@@ -11,40 +11,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ngram_counts add_to_counts) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw();
 
-our $VERSION = '0.04';
-
-require XSLoader;
-XSLoader::load('Text::Ngram', $VERSION);
-
-# Preloaded methods go here.
-
-sub clean_buffer {
-    my $buffer = lc shift;
-    $buffer =~ s/\s+/ /g;
-    $buffer =~ s/[^a-z ]+/ \xff /g;
-    return $buffer;
-}
-
-sub ngram_counts {
-    my ($buffer, $width) = @_;
-    my $href = process_buffer(clean_buffer($buffer), $width||5);
-    for (keys %$href) { delete $href->{$_} if /\xff/ }
-    return $href;
-}
-
-sub add_to_counts {
-    my ($buffer, $width, $href) = @_;
-    if (!defined $width  or !$width) {
-        my ($key, undef) = each %$href; # Just gimme a random key
-        $width = length $key || 5;
-    }
-    process_buffer_incrementally(clean_buffer($buffer), $width, $href);
-    for (keys %$href) { delete $href->{$_} if /\xff/ }
-}
-
-1;
-__END__
-# Below is stub documentation for your module. You'd better edit it!
+our $VERSION = '0.05';
 
 =head1 NAME
 
@@ -81,35 +48,156 @@ spectrum analysis.
 
 There are two functions which can be imported:
 
-    $href = ngram_counts($text[, $window]);
+=cut
+
+require XSLoader;
+XSLoader::load('Text::Ngram', $VERSION);
+
+sub clean_buffer {
+    my %config = %{+shift};
+    my $buffer = lc shift if $config{lowercase};
+    $buffer =~ s/\s+/ /g;
+    unless ($config{punctuation}) {
+      if ($config{flankbreaks}) {
+        $buffer =~ s/[^a-z ]+/ \xff /g;
+      }
+      else {
+        $buffer =~ s/[^a-z ]+/\xff/g;
+      }
+    }
+    $buffer =~ y/ / /s;
+    return $buffer;
+}
+
+=head2 ngram_counts
 
 This first function returns a hash reference with the n-gram histogram 
-of the text for the given window size. If the window size is omitted,
-then 5-grams are used. This seems relatively standard.
+of the text for the given window size. The default window size is 5.
 
-    add_to_counts($more_text, $window, $href)
+    $href = ngram_counts(\%config, $text, $window_size);
+
+The only necessary parameter is $text.
+
+The possible value for \%config are:
+
+=head3 flankbreaks
+
+If set to 1 (default), breaks are flanked by spaces; if set to 0,
+they're not. Breaks are punctuation and other non-alfabetic
+characters, which, unless you use C<punctuation => 0> in your
+configuration, do not make it into the returned hash.
+
+Here's an example, supposing you're using the default value
+for punctuation (1):
+
+  my $text = "Hello, world";
+  my $hash = ngram_counts($text, 5);
+
+That produces the following ngrams:
+
+  {
+    'Hello' => 1,
+    'ello ' => 1,
+    ' worl' => 1,
+    'world' => 1,
+  }
+
+On the other hand, this:
+
+  my $text = "Hello, world";
+  my $hash = ngram_counts({flankbreaks => 0}, $text, 5);
+
+Produces the following ngrams:
+
+  {
+    'Hello' => 1,
+    ' worl' => 1,
+    'world' => 1,
+  }
+
+=head3 lowercase
+
+If set to 0, casing is preserved. If set to 1, all letters are
+lowercased before counting ngrams. Default is 1.
+
+    # Get all ngrams of size 4 preserving case
+    $href_p = ngram_counts( {lowercase => 0}, $text, 4 );
+
+=head3 punctuation
+
+If set to 0 (default), punctuation is removed before calculating the
+ngrams.  Set to 1 to preserve it.
+
+    # Get all ngrams of size 2 preserving punctuation
+    $href_p = ngram_counts( {punctuation => 1}, $text, 2 );
+
+=head3 spaces
+
+If set to 0 default is 1, no ngrams contaning spaces will be returned.
+
+   # Get all ngrams of size 3 that do not contain spaces
+   $href = ngram_counts( {spaces => 0}, $text, 3);
+
+If you're going to request both types of ngrams, than the best way to
+avoid calculating the same thing twice is probably this:
+
+    $href_with_spaces = ngram_counts($text[, $window]);
+    $href_no_spaces = $href_with_spaces;
+    for (keys %$href_no_spaces) { delete $href->{$_} if / / }
+
+=cut
+
+sub ngram_counts {
+    my %config = (
+        spaces => 1,
+        punctuation => 0,
+        lowercase => 1,
+        flankbreaks => 1
+        );
+    if (ref($_[0]) eq 'HASH') {
+        %config = (%config, %{+shift});
+    }
+    my ($buffer, $width) = @_;
+    $width ||= 5;
+    return {} if $width < 1;
+    my $href = process_buffer(clean_buffer(\%config, $buffer), $width);
+    for (keys %$href) { delete $href->{$_} if /\xff/ }
+    unless ($config{spaces}) {
+        for (keys %$href) { delete $href->{$_} if / / }
+    }
+    return $href;
+}
+
+=head2 add_to_counts
 
 This incrementally adds to the supplied hash; if C<$window> is zero or
 undefined, then the window size is computed from the hash keys.
 
-=head1 Important note on text preparation
+    add_to_counts($more_text, $window, $href)
 
-Most of the published algorithms for textual n-gram analysis assume that
-the only characters you're interested in are alphabetic characters and
-spaces. So before the text is counted, the following preparation is
-made.
+=cut
 
-All characters are lowercased; (most papers use upper-casing, but that
-just feels so 1970s) punctuation and numerals are replaced by stop
-characters flanked by blanks; multiple spaces are compressed into a
-single space.
+sub add_to_counts {
+    my %config = (punctuation => 0, lowercase => 1);
+    my ($buffer, $width, $href) = @_;
+    if (!defined $width  or !$width) {
+        my ($key, undef) = each %$href; # Just gimme a random key
+        $width = length $key || 5;
+    }
+    process_buffer_incrementally(clean_buffer(\%config, $buffer), $width, $href);
+    for (keys %$href) { delete $href->{$_} if /\xff/ }
+}
 
-After the counts are made, n-grams containing stop characters are
-dropped from the hash.
+1;
+__END__
 
-If you prefer to do your own text preparation, use the internal routines
-C<process_text> and C<process_text_incrementally> instead of
-C<count_ngrams> and C<add_to_counts> respectively.
+=head1 TO DO
+
+=over 6
+
+=item * Look further into the tests. Sort them and add more.
+
+=back
 
 =head1 SEE ALSO
 
@@ -127,11 +215,13 @@ I<Computer Journal, 20>. 141-147.
 =head1 AUTHOR
 
 Maintained by Jose Castro, C<cog@cpan.org>.
+
 Originally created by Simon Cozens, C<simon@cpan.org>.
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2004 by Jose Castro
+
 Copyright 2003 by Simon Cozens
 
 This library is free software; you can redistribute it and/or modify

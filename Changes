@@ -1,13 +1,25 @@
 Revision history for Perl extension Text::Ngram.
 
-0.04 minor changes to the documentation
-     added META.yml
+0.05  Wed Nov 03 00:04:00 2004
+        - added more tests
+        - added configuration, allowing parameter "punctuation", "spaces",
+          "lowercase" and "flankbreaks"; the default configuration is backwards
+          compatible
+        - ngrams of size 0 or less are now imediately returned as a reference
+          to an empty hash
+        - changes in the documentation
+        - added pod.t to the tests directory
 
-0.03 changed the way text is prepared
+0.04
+        - minor changes to the documentation
+        - added META.yml
 
-0.02 fixed an embarassing export bug
+0.03
+        - changed the way text is prepared
+
+0.02
+        - fixed an embarassing export bug
 
 0.01  Wed Apr  2 13:06:16 2003
-	- original version; created by h2xs 1.22 with options
-		-A -b 5.6.0 -n Text::Ngram
-
+        - original version; created by h2xs 1.22 with options
+                -A -b 5.6.0 -n Text::Ngram
