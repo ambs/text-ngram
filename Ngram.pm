@@ -11,7 +11,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ngram_counts add_to_counts) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw();
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 NAME
 
@@ -53,7 +53,7 @@ There are two functions which can be imported:
 require XSLoader;
 XSLoader::load('Text::Ngram', $VERSION);
 
-sub clean_buffer {
+sub _clean_buffer {
     my %config = %{+shift};
     my $buffer = lc shift if $config{lowercase};
     $buffer =~ s/\s+/ /g;
@@ -160,7 +160,7 @@ sub ngram_counts {
     my ($buffer, $width) = @_;
     $width ||= 5;
     return {} if $width < 1;
-    my $href = process_buffer(clean_buffer(\%config, $buffer), $width);
+    my $href = _process_buffer(_clean_buffer(\%config, $buffer), $width);
     for (keys %$href) { delete $href->{$_} if /\xff/ }
     unless ($config{spaces}) {
         for (keys %$href) { delete $href->{$_} if / / }
@@ -184,7 +184,7 @@ sub add_to_counts {
         my ($key, undef) = each %$href; # Just gimme a random key
         $width = length $key || 5;
     }
-    process_buffer_incrementally(clean_buffer(\%config, $buffer), $width, $href);
+    _process_buffer_incrementally(_clean_buffer(\%config, $buffer), $width, $href);
     for (keys %$href) { delete $href->{$_} if /\xff/ }
 }
 

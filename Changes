@@ -1,5 +1,8 @@
 Revision history for Perl extension Text::Ngram.
 
+0.06
+	- added pod-coverage.t to the tests directory
+
 0.05  Wed Nov 03 00:04:00 2004
         - added more tests
         - added configuration, allowing parameter "punctuation", "spaces",
