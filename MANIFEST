@@ -1,0 +1,9 @@
+Changes
+Makefile.PL
+MANIFEST
+Ngram.pm
+Ngram.xs
+ppport.h
+README
+t/01-basic.t
+META.yml                                 Module meta-data (added by MakeMaker)
