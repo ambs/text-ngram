@@ -15,7 +15,7 @@ our $VERSION = '0.06';
 
 =head1 NAME
 
-Text::Ngram - Basis for n-gram analysis
+Text::Ngram - Basis for n-gram analysis of text
 
 =head1 SYNOPSIS
 
