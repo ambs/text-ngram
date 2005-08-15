@@ -11,11 +11,11 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ngram_counts add_to_counts) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw();
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 =head1 NAME
 
-Text::Ngram - Basis for n-gram analysis of text
+Text::Ngram - Ngram analysis of text
 
 =head1 SYNOPSIS
 

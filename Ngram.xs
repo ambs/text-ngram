@@ -4,7 +4,7 @@
 
 #include "ppport.h"
 
-void process_buffer(char* buffer, int window, HV** counts_hv) {
+void _process_buffer(char* buffer, int window, HV** counts_hv) {
     HV* counts;
     int balance = window / 2;
     
@@ -24,22 +24,22 @@ void process_buffer(char* buffer, int window, HV** counts_hv) {
 MODULE = Text::Ngram		PACKAGE = Text::Ngram		
 
 HV* 
-process_buffer(buffer, window)
+_process_buffer(buffer, window)
     char* buffer
     int   window
     CODE:
     {
         HV* newhv = NULL;
-        process_buffer(buffer, window, &newhv);
+        _process_buffer(buffer, window, &newhv);
         RETVAL=newhv;
     }
     OUTPUT:
         RETVAL
 
 void
-process_buffer_incrementally(buffer, window, hash)
+_process_buffer_incrementally(buffer, window, hash)
     char* buffer
     int   window
     HV*   hash
     CODE:
-        process_buffer(buffer, window, &hash);
+        _process_buffer(buffer, window, &hash);
