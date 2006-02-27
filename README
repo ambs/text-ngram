@@ -1,5 +1,5 @@
-Ngram.pm version 0.07
-=====================
+ Text::Ngram
+=============
 
 =head1 NAME
 
@@ -142,11 +142,14 @@ I<Computer Journal, 20>. 141-147.
 
 =head1 AUTHOR
 
-Maintained by Jose Castro, C<cog@cpan.org>.
+Mainrained by Alberto Simoes, C<ambs@cpan.org>.
 
+Previously maintained by Jose Castro, C<cog@cpan.org>.
 Originally created by Simon Cozens, C<simon@cpan.org>.
 
 =head1 COPYRIGHT AND LICENSE
+
+Copyright 2006 by Alberto Simoes
 
 Copyright 2004 by Jose Castro
 
