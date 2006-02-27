@@ -1,7 +1,8 @@
 Revision history for Text-Ngram
 
-0.09  
+0.09  Mon Feb 27 15:06:00 2006 - "Overtake"
 	- Changed maintainership and contact information
+	- Moved .pm file to lib/Text
 
 0.08  (02 Nov 2005)
 
