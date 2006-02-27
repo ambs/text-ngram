@@ -1,7 +1,7 @@
 Changes
 Makefile.PL
 MANIFEST
-Ngram.pm
+lib/Text/Ngram.pm
 Ngram.xs
 ppport.h
 README
