@@ -12,7 +12,7 @@ void _process_buffer(char* buffer, int window, HV** counts_hv) {
         balance++;
 
     if (!counts_hv || !*counts_hv)
-        *counts_hv = newHV();
+        *counts_hv = (HV*)sv_2mortal((SV*)newHV());
 
     counts = *counts_hv;
 
