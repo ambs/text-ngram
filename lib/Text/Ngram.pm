@@ -59,10 +59,10 @@ sub _clean_buffer {
     $buffer =~ s/\s+/ /g;
     unless ($config{punctuation}) {
       if ($config{flankbreaks}) {
-        $buffer =~ s/[^a-z ]+/ \xff /g;
+        $buffer =~ s/[^[:alpha:] ]+/ \xff /g;
       }
       else {
-        $buffer =~ s/[^a-z ]+/\xff/g;
+        $buffer =~ s/[^[:alpha:] ]+/\xff/g;
       }
     }
     $buffer =~ y/ / /s;
@@ -160,11 +160,34 @@ sub ngram_counts {
     my ($buffer, $width) = @_;
     $width ||= 5;
     return {} if $width < 1;
-    my $href = _process_buffer(_clean_buffer(\%config, $buffer), $width);
+    my $href;
+    unless (utf8::is_utf8($buffer)) {
+        $href = _process_buffer(_clean_buffer(\%config, $buffer), $width);
+    }
+    else {
+        $href = _process_buffer_pp(_clean_buffer(\%config, $buffer), $width, {});
+    }
     for (keys %$href) { delete $href->{$_} if /\xff/ }
     unless ($config{spaces}) {
         for (keys %$href) { delete $href->{$_} if / / }
     }
+    return $href;
+}
+
+sub _process_buffer_pp {
+    my ($buffer, $window, $href) = @_;
+
+    my $b_len = length($buffer);
+
+    my $balance = int $window / 2;
+    $window & 1 and $balance++;
+
+    my $pos = $balance;
+
+    while(($pos - $balance + $window) <= $b_len) {
+        ++$href->{substr($buffer, $pos++ - $balance, $window)};
+    }
+
     return $href;
 }
 
@@ -184,7 +207,12 @@ sub add_to_counts {
         my ($key, undef) = each %$href; # Just gimme a random key
         $width = length $key || 5;
     }
-    _process_buffer_incrementally(_clean_buffer(\%config, $buffer), $width, $href);
+    unless (utf8::is_utf8($buffer)) {
+        _process_buffer_incrementally(_clean_buffer(\%config, $buffer), $width, $href);
+    }
+    else {
+        _process_buffer_pp(_clean_buffer(\%config, $buffer), $width, $href);
+    }
     for (keys %$href) { delete $href->{$_} if /\xff/ }
 }
 

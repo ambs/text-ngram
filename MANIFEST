@@ -10,3 +10,4 @@ t/pod.t
 t/pod-coverage.t
 META.yml                                 Module meta-data (added by MakeMaker)
 CREDITS
+t/02-unicode.t

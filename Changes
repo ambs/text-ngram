@@ -1,5 +1,9 @@
 Revision history for Text-Ngram
 
+0.10  Wed May 06 17:58:00 2008
+        - Added pure perl code to compute ngrams on unicode strings
+          [thanks to Alex Kapranoff]
+
 0.09  Mon Feb 27 15:06:00 2006 - "Overtake"
 	- Changed maintainership and contact information
 	- Moved .pm file to lib/Text
