@@ -84,7 +84,7 @@ The possible value for \%config are:
 
 If set to 1 (default), breaks are flanked by spaces; if set to 0,
 they're not. Breaks are punctuation and other non-alfabetic
-characters, which, unless you use C<punctuation => 0> in your
+characters, which, unless you use C<< punctuation => 0 >> in your
 configuration, do not make it into the returned hash.
 
 Here's an example, supposing you're using the default value
