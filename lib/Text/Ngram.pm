@@ -133,7 +133,7 @@ ngrams.  Set to 1 to preserve it.
 
 =head3 spaces
 
-If set to 0 default is 1, no ngrams contaning spaces will be returned.
+If set to 0 (default is 1), no ngrams contaning spaces will be returned.
 
    # Get all ngrams of size 3 that do not contain spaces
    $href = ngram_counts( {spaces => 0}, $text, 3);
