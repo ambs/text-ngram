@@ -1,5 +1,9 @@
 Revision history for Text-Ngram
 
+0.12  Fri Jul 30 12:02:06 2010
+        - fixed misbehaviour of 'lowercase=>0'. 
+          Thanks to Andreas Koenig for reporting the bug.
+
 0.11  Sun May 17 22:14:00 2009
 	- Some stupid behaviour on uploading the module. 
       Here it goes again

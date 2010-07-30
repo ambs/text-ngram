@@ -11,7 +11,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ngram_counts add_to_counts) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw();
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 =head1 NAME
 
@@ -55,7 +55,8 @@ XSLoader::load('Text::Ngram', $VERSION);
 
 sub _clean_buffer {
     my %config = %{+shift};
-    my $buffer = lc shift if $config{lowercase};
+    my $buffer = shift;
+    $buffer = lc $buffer if $config{lowercase};
     $buffer =~ s/\s+/ /g;
     unless ($config{punctuation}) {
       if ($config{flankbreaks}) {
