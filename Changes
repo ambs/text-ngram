@@ -1,5 +1,8 @@
 Revision history for Text-Ngram
 
+0.13  Sat Oct 16 10:00:27 WEST 2010
+        - Require perl 5.8.8 for Unicode support
+
 0.12  Fri Jul 30 12:02:06 2010
         - fixed misbehaviour of 'lowercase=>0'. 
           Thanks to Andreas Koenig for reporting the bug.

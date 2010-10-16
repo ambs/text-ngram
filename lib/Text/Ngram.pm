@@ -1,6 +1,6 @@
 package Text::Ngram;
 
-use 5.006;
+use 5.008008;
 use strict;
 use warnings;
 
@@ -11,7 +11,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ngram_counts add_to_counts) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw();
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 =head1 NAME
 
