@@ -72,14 +72,18 @@ sub _clean_buffer {
 
 =head2 ngram_counts
 
-This first function returns a hash reference with the n-gram histogram 
+This first function returns a hash reference with the n-gram histogram
 of the text for the given window size. The default window size is 5.
 
     $href = ngram_counts(\%config, $text, $window_size);
 
+As of version 0.14, the %config may instead be passed in as named arguments:
+
+    $href = ngram_counts($text, $window_size, %config);
+
 The only necessary parameter is $text.
 
-The possible value for \%config are:
+The possible value for %config are:
 
 =head3 flankbreaks
 
@@ -157,6 +161,9 @@ sub ngram_counts {
         );
     if (ref($_[0]) eq 'HASH') {
         %config = (%config, %{+shift});
+    }
+    elsif (@_ > 3) {
+        %config = (%config, splice @_, 2);
     }
     my ($buffer, $width) = @_;
     $width ||= 5;
@@ -257,6 +264,6 @@ Copyright 2004 by Jose Castro
 Copyright 2003 by Simon Cozens
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the same terms as Perl itself.
 
 =cut
