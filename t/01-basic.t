@@ -1,5 +1,5 @@
 # vim:ft=perl
-use Test::More tests => 16;
+use Test::More tests => 17;
 BEGIN { use_ok("Text::Ngram"); }
 
 my $text = "abcdefg1235678hijklmnop";
@@ -176,3 +176,8 @@ is_deeply( Text::Ngram::ngram_counts($text3, 5, punctuation => 1, flankbreaks =>
 	}
 );
 
+# Apparent bug: includes key "cde\0"
+TODO: {
+    local $TODO = 'bug';
+    is_deeply(Text::Ngram::ngram_counts('abcde', 4), { abcd => 1, bcde => 1 });
+}
