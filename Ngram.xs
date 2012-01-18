@@ -8,7 +8,7 @@
 void _process_buffer(char* buffer, int window, HV** counts_hv) {
     HV* counts;
     int balance = window / 2;
-    
+
     if (window & 1)
         balance++;
 
@@ -22,9 +22,11 @@ void _process_buffer(char* buffer, int window, HV** counts_hv) {
         sv_inc(*hv_fetch(counts, buffer++ - balance, window, TRUE));
 }
 
-MODULE = Text::Ngram		PACKAGE = Text::Ngram		
+MODULE = Text::Ngram            PACKAGE = Text::Ngram
 
-HV* 
+PROTOTYPES: DISABLE
+
+HV*
 _process_buffer(buffer, window)
     char* buffer
     int   window
