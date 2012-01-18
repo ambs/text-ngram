@@ -84,7 +84,7 @@ The possible value for \%config are:
 =head3 flankbreaks
 
 If set to 1 (default), breaks are flanked by spaces; if set to 0,
-they're not. Breaks are punctuation and other non-alfabetic
+they're not. Breaks are punctuation and other non-alphabetic
 characters, which, unless you use C<< punctuation => 0 >> in your
 configuration, do not make it into the returned hash.
 
@@ -134,7 +134,7 @@ ngrams.  Set to 1 to preserve it.
 
 =head3 spaces
 
-If set to 0 (default is 1), no ngrams contaning spaces will be returned.
+If set to 0 (default is 1), no ngrams containing spaces will be returned.
 
    # Get all ngrams of size 3 that do not contain spaces
    $href = ngram_counts( {spaces => 0}, $text, 3);
