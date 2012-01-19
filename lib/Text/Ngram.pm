@@ -162,8 +162,8 @@ sub ngram_counts {
     if (ref($_[0]) eq 'HASH') {
         %config = (%config, %{+shift});
     }
-    elsif (@_ > 3) {
-        %config = (%config, splice @_, 2);
+    elsif (@_ > 2) {
+        %config = (%config, splice @_, (@_ & 1) ? 1 : 2);
     }
     my ($buffer, $width) = @_;
     $width ||= 5;
