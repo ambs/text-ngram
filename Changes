@@ -1,6 +1,6 @@
 Revision history for Text-Ngram
 
-0.14  Sun Jan 22 11:40:24 WET 2012
+0.14_01 Sun Jan 22 11:40:24 WET 2012
         - Fixed off-by-one error.
         - Sped up UTF-8 processing; now uses XS instead of pure perl.
         - Allowed config to be passed in as named arguments.
