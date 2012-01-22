@@ -72,19 +72,23 @@ sub _clean_buffer {
 
 =head2 ngram_counts
 
-This first function returns a hash reference with the n-gram histogram 
+This first function returns a hash reference with the n-gram histogram
 of the text for the given window size. The default window size is 5.
 
     $href = ngram_counts(\%config, $text, $window_size);
 
+As of version 0.14, the %config may instead be passed in as named arguments:
+
+    $href = ngram_counts($text, $window_size, %config);
+
 The only necessary parameter is $text.
 
-The possible value for \%config are:
+The possible value for %config are:
 
 =head3 flankbreaks
 
 If set to 1 (default), breaks are flanked by spaces; if set to 0,
-they're not. Breaks are punctuation and other non-alfabetic
+they're not. Breaks are punctuation and other non-alphabetic
 characters, which, unless you use C<< punctuation => 0 >> in your
 configuration, do not make it into the returned hash.
 
@@ -134,7 +138,7 @@ ngrams.  Set to 1 to preserve it.
 
 =head3 spaces
 
-If set to 0 (default is 1), no ngrams contaning spaces will be returned.
+If set to 0 (default is 1), no ngrams containing spaces will be returned.
 
    # Get all ngrams of size 3 that do not contain spaces
    $href = ngram_counts( {spaces => 0}, $text, 3);
@@ -158,37 +162,19 @@ sub ngram_counts {
     if (ref($_[0]) eq 'HASH') {
         %config = (%config, %{+shift});
     }
+    elsif (@_ > 2) {
+        %config = (%config, splice @_, (@_ & 1) ? 1 : 2);
+    }
     my ($buffer, $width) = @_;
     $width ||= 5;
     return {} if $width < 1;
-    my $href;
-    unless (utf8::is_utf8($buffer)) {
-        $href = _process_buffer(_clean_buffer(\%config, $buffer), $width);
+    my $href = _process_buffer(_clean_buffer(\%config, $buffer), $width);
+    unless ($config{punctuation}) {
+        for (keys %$href) { delete $href->{$_} if /\xff/ }
     }
-    else {
-        $href = _process_buffer_pp(_clean_buffer(\%config, $buffer), $width, {});
-    }
-    for (keys %$href) { delete $href->{$_} if /\xff/ }
     unless ($config{spaces}) {
         for (keys %$href) { delete $href->{$_} if / / }
     }
-    return $href;
-}
-
-sub _process_buffer_pp {
-    my ($buffer, $window, $href) = @_;
-
-    my $b_len = length($buffer);
-
-    my $balance = int $window / 2;
-    $window & 1 and $balance++;
-
-    my $pos = $balance;
-
-    while(($pos - $balance + $window) <= $b_len) {
-        ++$href->{substr($buffer, $pos++ - $balance, $window)};
-    }
-
     return $href;
 }
 
@@ -208,12 +194,7 @@ sub add_to_counts {
         my ($key, undef) = each %$href; # Just gimme a random key
         $width = length $key || 5;
     }
-    unless (utf8::is_utf8($buffer)) {
-        _process_buffer_incrementally(_clean_buffer(\%config, $buffer), $width, $href);
-    }
-    else {
-        _process_buffer_pp(_clean_buffer(\%config, $buffer), $width, $href);
-    }
+    _process_buffer_incrementally(_clean_buffer(\%config, $buffer), $width, $href);
     for (keys %$href) { delete $href->{$_} if /\xff/ }
 }
 
@@ -257,6 +238,6 @@ Copyright 2004 by Jose Castro
 Copyright 2003 by Simon Cozens
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the same terms as Perl itself.
 
 =cut

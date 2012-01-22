@@ -1,6 +1,6 @@
 # vim:ft=perl
-use Test::More tests => 15;
-use_ok("Text::Ngram");
+use Test::More tests => 19;
+BEGIN { use_ok("Text::Ngram"); }
 
 my $text = "abcdefg1235678hijklmnop";
 my $hash = Text::Ngram::ngram_counts($text, 3);
@@ -168,3 +168,22 @@ is_deeply( Text::Ngram::ngram_counts( {punctuation => 1, flankbreaks => 0}, $tex
 	}
 );
 
+is_deeply( Text::Ngram::ngram_counts($text3, 5, punctuation => 1, flankbreaks => 0),
+	{
+	  'simpl' => 1,
+	  'imple' => 1,
+	  'mple.' => 1,
+	}
+);
+
+is_deeply( Text::Ngram::ngram_counts($text3, punctuation => 1, flankbreaks => 0),
+	{
+	  'simpl' => 1,
+	  'imple' => 1,
+	  'mple.' => 1,
+	}
+);
+
+# Off-by-on bug
+is_deeply(Text::Ngram::ngram_counts('abc', 1), { a => 1, b => 1, c => 1});
+is_deeply(Text::Ngram::ngram_counts('abcde', 4), { abcd => 1, bcde => 1 });
