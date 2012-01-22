@@ -11,14 +11,28 @@ void _process_buffer(SV* sv, unsigned int window, HV** counts_hv) {
     HV*    counts;
     STRLEN len;
     char*  buffer = SvPV(sv, len);
-    unsigned int windows = (len < window) ? 0 : len - window + 1;
 
     if (!counts_hv || !*counts_hv)
         *counts_hv = (HV*)sv_2mortal((SV*)newHV());
     counts = *counts_hv;
 
-    while (windows--) {
-        sv_inc(*hv_fetch(counts, buffer++, window, TRUE));
+    if (DO_UTF8(sv)) {
+        char* next, * cur;
+        unsigned int c;
+        len = sv_len_utf8(sv);
+        unsigned int windows = (len < window) ? 0 : len - window + 1;
+        while (windows--) {
+            cur = next = buffer + UTF8SKIP(buffer);
+            for (c = window - 1;  c--; cur += UTF8SKIP(cur)) ;
+            sv_inc(*hv_fetch(counts, buffer, -(cur - buffer), TRUE));
+            buffer = next;
+        }
+    }
+    else {
+        unsigned int windows = (len < window) ? 0 : len - window + 1;
+        while (windows--) {
+            sv_inc(*hv_fetch(counts, buffer++, window, TRUE));
+        }
     }
 }
 
