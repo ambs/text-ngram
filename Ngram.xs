@@ -7,7 +7,7 @@
 
 #include "ppport.h"
 
-void _process_buffer(SV* sv, unsigned int window, HV** counts_hv) {
+void _process_buffer(pTHX_ SV* sv, unsigned int window, HV** counts_hv) {
     HV*    counts;
     STRLEN len;
     char*  buffer = SvPV(sv, len);
@@ -47,7 +47,7 @@ _process_buffer(buffer, window)
     CODE:
     {
         HV* newhv = NULL;
-        _process_buffer(buffer, window, &newhv);
+        _process_buffer(aTHX_ buffer, window, &newhv);
         RETVAL=newhv;
     }
     OUTPUT:
@@ -59,4 +59,4 @@ _process_buffer_incrementally(buffer, window, hash)
     unsigned int window
     HV* hash
     CODE:
-        _process_buffer(buffer, window, &hash);
+        _process_buffer(aTHX_ buffer, window, &hash);
