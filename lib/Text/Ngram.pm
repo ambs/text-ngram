@@ -11,7 +11,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ngram_counts add_to_counts) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw();
 
-our $VERSION = '0.14_01';
+our $VERSION = '0.14';
 
 =head1 NAME
 

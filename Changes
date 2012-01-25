@@ -1,5 +1,8 @@
 Revision history for Text-Ngram
 
+0.14   Wed Jan 25 15:40:30 WET 2012
+        - releasing as stable
+
 0.14_01 Sun Jan 22 11:40:24 WET 2012
         - Fixed off-by-one error.
         - Sped up UTF-8 processing; now uses XS instead of pure perl.
