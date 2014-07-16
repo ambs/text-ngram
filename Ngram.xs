@@ -21,6 +21,7 @@ void _process_buffer(pTHX_ SV* sv, unsigned int window, HV** counts_hv) {
         unsigned int c;
         len = sv_len_utf8(sv);
         unsigned int windows = (len < window) ? 0 : len - window + 1;
+
         while (windows--) {
             cur = next = buffer + UTF8SKIP(buffer);
             for (c = window - 1;  c--; cur += UTF8SKIP(cur)) ;

@@ -4,6 +4,8 @@ use 5.008008;
 use strict;
 use warnings;
 
+use Unicode::CaseFold;
+
 require Exporter;
 
 our @ISA = qw(Exporter);
@@ -11,7 +13,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ngram_counts add_to_counts) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw();
 
-our $VERSION = '0.14';
+our $VERSION = '0.15_1';
 
 =head1 NAME
 
@@ -56,15 +58,15 @@ XSLoader::load('Text::Ngram', $VERSION);
 sub _clean_buffer {
     my %config = %{+shift};
     my $buffer = shift;
-    $buffer = lc $buffer if $config{lowercase};
+    $buffer = fc $buffer if $config{lowercase};
     $buffer =~ s/\s+/ /g;
     unless ($config{punctuation}) {
-      if ($config{flankbreaks}) {
-        $buffer =~ s/[^[:alpha:] ]+/ \xff /g;
-      }
-      else {
-        $buffer =~ s/[^[:alpha:] ]+/\xff/g;
-      }
+        if ($config{flankbreaks}) {
+            $buffer =~ s/[^[:alpha:] ]+/ \xff /g;
+        }
+        else {
+            $buffer =~ s/[^[:alpha:] ]+/\xff/g;
+        }
     }
     $buffer =~ y/ / /s;
     return $buffer;
@@ -154,11 +156,11 @@ avoid calculating the same thing twice is probably this:
 
 sub ngram_counts {
     my %config = (
-        spaces => 1,
-        punctuation => 0,
-        lowercase => 1,
-        flankbreaks => 1
-        );
+                  spaces => 1,
+                  punctuation => 0,
+                  lowercase => 1,
+                  flankbreaks => 1
+                 );
     if (ref($_[0]) eq 'HASH') {
         %config = (%config, %{+shift});
     }

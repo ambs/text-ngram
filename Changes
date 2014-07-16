@@ -1,5 +1,8 @@
 Revision history for Text-Ngram
 
+0.15_1  Wed Jul 16 14:27:48 WEST 2014
+        - substitute lowercase by case folding.
+
 0.14   Wed Jan 25 15:40:30 WET 2012
         - releasing as stable
 
